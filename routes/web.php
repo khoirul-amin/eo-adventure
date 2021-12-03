@@ -48,8 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/transaksi', 'Transaksi\TransaksiController@index');
     Route::post('/transaksi/get_datatables', 'Transaksi\TransaksiController@get_datatables');
     Route::post('/transaksi/update', 'Transaksi\TransaksiController@update');
-    Route::post('/transaksi/insert', 'Transaksi\TransaksiController@insert');
-    Route::get('/transaksi/delete/{id}', 'Transaksi\TransaksiController@delete');
+    Route::get('/transaksi/invoice/{id}', 'Transaksi\TransaksiController@invoice');
 
     // Transportasi
     Route::get('/transportasi', 'Event\TransportasiController@index');
