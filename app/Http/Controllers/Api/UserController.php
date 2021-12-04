@@ -8,7 +8,6 @@ use App\Http\Models\user_m;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\URL;
 
 class UserController{
     public function register(Request $request){
