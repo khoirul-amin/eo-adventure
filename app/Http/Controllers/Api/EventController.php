@@ -31,6 +31,14 @@ class EventController{
         }
     }
 
+    function get_limit(){
+        $events =  event_m::join('images', 'event.kode_event', '=', 'images.type')->where('images.deskripsi', 'images1')->offset(0)->limit(6)->get(['event.*', 'images.images']);
+        if($events->first()){
+            return response()->json((new ResponseLibrary())->res(200, $events, 'Data kategori event'));
+        }else{
+            return response()->json((new ResponseLibrary())->res(200, null, 'Data kategori event kosong'));
+        }
+    }
     function get_by_kategori($id){
         $event = event_m::join('kategori_event', 'event.kategori_id', '=', 'kategori_event.id')->where('event.kategori_id', $id)->get(['event.*', 'kategori_event.kategori'])->first();
 

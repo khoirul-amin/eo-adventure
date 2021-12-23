@@ -32,10 +32,51 @@ class TransaksiController{
         ->join('kategori_event', 'event.kategori_id', '=', 'kategori_event.id')
         ->join('paket', 'transaksi.paket_id', '=', 'paket.id')
         ->where('transaksi.id', $id)
-        ->get(['transaksi.*','event.*','users.name','paket.paket','paket.harga','kategori_event.kategori','transportasi.transportasi'])->first();
+        ->get(['transaksi.*','transaksi.id as id_transaksi','event.*','users.name','paket.paket','paket.harga','kategori_event.kategori','transportasi.transportasi'])->first();
+
+        
 
         if($history->first()){
-            return response()->json((new ResponseLibrary())->res(200, $history, 'Data history transaksi'));
+            $res = array();
+
+            $res['id'] = $history->id_transaksi;
+            $res['invoice'] = $history->invoice;
+            $res['tanggal'] = $history->tanggal;
+            $res['pemberangkatan'] = $history->pemberangkatan;
+            $res['bukti_pembayaran'] = $history->bukti_pembayaran; 
+            if(empty($history->bukti_pembayaran)){
+                $res['bukti_pembayaran'] = "Data Kosong"; 
+            }
+            $res['dadeline_pembayaran'] = $history->dadeline_pembayaran;
+            $status = "";
+            if($history->status_transaksi == 1){
+                $status = "Disetujui";
+            }elseif($history->status_transaksi == 2){
+                $status = "Ditolak";
+            }elseif($history->status_transaksi == 3){
+                $status = "Menunggu";
+            }elseif($history->status_transaksi == 4){
+                $status = "Dibatalkan";
+            }
+            $res['status_transaksi'] = $status;
+
+            $res['keterangan'] = $history->keterangan;
+            if(empty($history->keterangan)){
+                $res['keterangan'] = "Kososong";
+            }
+            $res['judul'] = $history->judul;
+            $res['biaya'] = $history->harga;
+            // $res['kuota'] = 15;
+            // $res['transportasi_id'] = 5;
+            // $res['kategori_id'] = 2;
+            // $res['name'] = $res['Amin$res[';
+            // $res['paket'] = $res['3 Orang$res[';
+            // $res['harga'] = 500000;
+            // $res['kategori'] = $res['2 Hari 1 Malam$res[';
+            // $res['transportasi'] = $res['Elf Long$res['
+            
+
+            return response()->json((new ResponseLibrary())->res(200, $res, 'Data history transaksi'));
         }else{
             return response()->json((new ResponseLibrary())->res(200, null, 'Data history transaksi kosong'));
         }

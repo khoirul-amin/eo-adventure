@@ -157,15 +157,24 @@ class UserController{
 
     public function get_profil($id){
         $result = user_m::where('id', (int)$id)->first();
+        $data = array();
+        $data['name'] = $result->name;
+        $data['email'] = $result->email;
+        $data['alamat'] = $result->alamat;
+        $data['last_login'] = $result->last_login;
 
-        $data = array(
-            'name' => $result->name,
-            'email' => $result->email,
-            'telpon' => $result->telpon,
-            'alamat' => $result->alamat,
-            'avatar' => $result->avatar,
-            'last_login' => $result->last_login
-        );
+
+        if(empty($result->telpon)){
+            $data['telpon'] = "-";
+        }else{
+            $data['telpon'] = $result->telpon;
+        }
+        if(empty($result->avatar)){
+            $data['avatar'] = "/assets/adminLte/dist/img/avatar.png";
+        }else{
+            $data['avatar'] = $result->avatar;
+        }
+
         return response()->json((new ResponseLibrary())->res(200, $data, 'Data Profil'));
     }
 }

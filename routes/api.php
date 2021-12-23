@@ -28,6 +28,7 @@ Route::middleware('apiCek')->group(function () {
 
     Route::get('/events', 'Api\EventController@get_all');
     Route::get('/event/kategoris', 'Api\EventController@get_all_kategori');
+    Route::get('/event/limit', 'Api\EventController@get_limit');
     Route::get('/events/kategori/{id}', 'Api\EventController@get_by_kategori');
     Route::get('/event/{id}', 'Api\EventController@get_by_id');
 
