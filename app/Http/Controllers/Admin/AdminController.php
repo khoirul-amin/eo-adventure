@@ -112,7 +112,7 @@ class AdminController extends Controller{
             $result_file = $file->move(\base_path() .'/public/avatar', $file_avatar);
     
             if($result_file){
-                $posts['image'] = '/avatar/'.$file_avatar;
+                $posts['avatar'] = '/avatar/'.$file_avatar;
             }else{
                 $respMesssage = 'Terjadi kesalahan saat upload gambar';
             }

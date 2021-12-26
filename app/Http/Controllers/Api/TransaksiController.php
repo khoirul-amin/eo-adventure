@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Library\ResponseLibrary;
 use App\Http\Library\ValidasiLibrary;
+use App\Http\Models\images_m;
 use App\Http\Models\transaksi_m;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
@@ -15,7 +16,7 @@ class TransaksiController{
         $history = transaksi_m::join('paket', 'transaksi.paket_id', '=', 'paket.id')
         ->join('event', 'transaksi.event_id', '=', 'event.id')
         ->join('images', 'event.kode_event', '=', 'images.type')->where('images.deskripsi','images1')
-        ->where('transaksi.user_id',$userId)->get(['transaksi.*','event.judul']);
+        ->where('transaksi.user_id',$userId)->orderBy('transaksi.id', 'DESC')->get(['transaksi.*','event.judul']);
 
         if($history->first()){
             return response()->json((new ResponseLibrary())->res(200, $history, 'Data history transaksi'));
@@ -37,15 +38,17 @@ class TransaksiController{
         
 
         if($history->first()){
+            $gambar = images_m::where('type', $history->kode_event)->first();
             $res = array();
 
             $res['id'] = $history->id_transaksi;
+            $res['id_event'] = $history->event_id;
             $res['invoice'] = $history->invoice;
             $res['tanggal'] = $history->tanggal;
             $res['pemberangkatan'] = $history->pemberangkatan;
             $res['bukti_pembayaran'] = $history->bukti_pembayaran; 
             if(empty($history->bukti_pembayaran)){
-                $res['bukti_pembayaran'] = "Data Kosong"; 
+                $res['bukti_pembayaran'] = "Kosong"; 
             }
             $res['dadeline_pembayaran'] = $history->dadeline_pembayaran;
             $status = "";
@@ -62,18 +65,13 @@ class TransaksiController{
 
             $res['keterangan'] = $history->keterangan;
             if(empty($history->keterangan)){
-                $res['keterangan'] = "Kososong";
+                $res['keterangan'] = "Kosong";
             }
             $res['judul'] = $history->judul;
             $res['biaya'] = $history->harga;
-            // $res['kuota'] = 15;
-            // $res['transportasi_id'] = 5;
-            // $res['kategori_id'] = 2;
-            // $res['name'] = $res['Amin$res[';
-            // $res['paket'] = $res['3 Orang$res[';
-            // $res['harga'] = 500000;
-            // $res['kategori'] = $res['2 Hari 1 Malam$res[';
-            // $res['transportasi'] = $res['Elf Long$res['
+            $res['transportasi'] = $history->transportasi;
+            $res['kategori'] = $history->paket;
+            $res['gambar'] = $gambar->images;
             
 
             return response()->json((new ResponseLibrary())->res(200, $res, 'Data history transaksi'));
@@ -110,10 +108,10 @@ class TransaksiController{
             $posts['status_transaksi'] = 3;
             $posts['dadeline_pembayaran'] = $pembayaran;
 
-            $transaksi = transaksi_m::insert($posts);
+            $id = transaksi_m::insertGetId($posts);
 
-            if($transaksi){
-                return response()->json((new ResponseLibrary())->res(200, null, "Request order berhasil silahkan lakukan pembayaran terahir tanggal $pembayaran"));
+            if(!empty($id)){
+                return response()->json((new ResponseLibrary())->res(200, $id, "Request order berhasil silahkan lakukan pembayaran terahir tanggal $pembayaran"));
             }else{
                 return response()->json((new ResponseLibrary())->res(302, null, 'Terjadi kesalahan pada aplikasi'));
             }
