@@ -59,6 +59,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/transportasi/updategambar', 'Event\TransportasiController@updategambar');
     Route::get('/transportasi/getgambar/{id}', 'Event\TransportasiController@getgambar');
 
+
+    // Kategori Event
+    Route::get('/alamat-pembayaran', 'Transaksi\PembayaranController@index');
+    Route::post('/alamat-pembayaran/get_datatables', 'Transaksi\PembayaranController@get_datatables');
+    Route::post('/alamat-pembayaran/update', 'Transaksi\PembayaranController@update');
+    Route::post('/alamat-pembayaran/insert', 'Transaksi\PembayaranController@insert');
+    Route::get('/alamat-pembayaran/delete/{id}', 'Transaksi\PembayaranController@delete');
+
     // Kategori Event
     Route::get('/kategori', 'Event\KategoriController@index');
     Route::post('/kategori/get_datatables', 'Event\KategoriController@get_datatables');
@@ -75,6 +83,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/destinasi/delete/{id}', 'Event\DestinasiController@delete');
     Route::post('/destinasi/updategambar', 'Event\DestinasiController@updategambar');
     Route::get('/destinasi/getgambar/{id}', 'Event\DestinasiController@getgambar');
+
+    // Galery
+    Route::get('/galery', 'Ulasan\GaleryController@index');
+
 
 
     // Event
@@ -100,7 +112,11 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/event/hapusketerangan/{id}', 'Event\EventController@hapusketerangan');
 
 
+    Route::get('/ulasan', 'Ulasan\UlasanController@index');
+    Route::post('/ulasan/get_datatables', 'Ulasan\UlasanController@get_datatables');
+
     Route::get('/event/{id}', 'Event\EventController@view_event');
+    Route::get('/transaksi/print', 'Transaksi\TransaksiController@print');
 
 
 });

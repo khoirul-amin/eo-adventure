@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Models\transaksi_m;
 use App\Http\Models\user_m;
 use Illuminate\Support\Facades\Auth;
-use PDF;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class TransaksiController extends Controller{
     function index(){
@@ -161,6 +161,17 @@ class TransaksiController extends Controller{
         }
 
         $pdf = PDF::loadview('pages.transaksi.invoice', compact('pemberangkatan','paket','admin_name','status_transaksi','data','user','event','agenda','date'))->setPaper('A4','potrait');
+        return $pdf->stream();
+    }
+
+
+    function print(){
+        $data = transaksi_m::join('users','transaksi.user_id','=','users.id')
+                ->join('event', 'transaksi.event_id', '=', 'event.id')
+                ->join('paket', 'transaksi.paket_id', '=', 'paket.id')
+                ->get(['transaksi.*', 'users.name', 'event.judul', 'event.biaya', 'paket.paket', 'paket.harga']);
+
+        $pdf = PDF::loadview('pages.transaksi.print', compact('data'))->setPaper('A4','potrait');
         return $pdf->stream();
     }
 }

@@ -32,8 +32,9 @@ class TransaksiController{
         ->join('transportasi', 'event.transportasi_id', '=', 'transportasi.id')
         ->join('kategori_event', 'event.kategori_id', '=', 'kategori_event.id')
         ->join('paket', 'transaksi.paket_id', '=', 'paket.id')
+        ->join('pembayaran', 'transaksi.pembayaran_id','=','pembayaran.id')
         ->where('transaksi.id', $id)
-        ->get(['transaksi.*','transaksi.id as id_transaksi','event.*','users.name','paket.paket','paket.harga','kategori_event.kategori','transportasi.transportasi'])->first();
+        ->get(['transaksi.*', 'pembayaran.*','transaksi.id as id_transaksi','event.*','users.name','paket.paket','paket.harga','kategori_event.kategori','transportasi.transportasi'])->first();
 
         
 
@@ -72,6 +73,9 @@ class TransaksiController{
             $res['transportasi'] = $history->transportasi;
             $res['kategori'] = $history->paket;
             $res['gambar'] = $gambar->images;
+            $res['kode_pembayaran'] = $history->no_tujuan;
+            $res['nama_pemilik'] = $history->atas_nama;
+            $res['nama_tujuan_pembayaran'] = $history->tujuan;
             
 
             return response()->json((new ResponseLibrary())->res(200, $res, 'Data history transaksi'));
@@ -100,6 +104,7 @@ class TransaksiController{
             $pembayaran = date('Y-m-d H:i:s',strtotime($dateformat . "-1 days"));
 
             $posts['pemberangkatan'] = $dateformat;
+            $posts['pembayaran_id'] = $request->pembayaran_id;
             $posts['user_id'] = $request->header('userId');
             $posts['event_id'] = $request->event_id;
             $posts['paket_id'] = $request->paket_id;

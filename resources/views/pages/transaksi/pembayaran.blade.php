@@ -5,12 +5,12 @@
         <div class="container-fluid">
             <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Data Transaksi</h1>
+                <h1>Data Tujuan Pembayaran</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item active">Data Transaksi</li>
+                <li class="breadcrumb-item active">Data Tujuan Pembayaran</li>
                 </ol>
             </div>
             </div>
@@ -29,16 +29,15 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body">
-                            <a href="/transaksi/print" target="new" class="btn btn-success mb-2">Print PDF</a>
+                            <button type="button" class="btn btn-success mb-2" data-toggle="modal" data-target="#modalform">Tambah</button>
                             <div class="table-responsive">
                                 <table id="example1" class="table table-bordered table-striped">
                                     <thead>
                                         <tr>
-                                            <th>NO</th>
-                                            <th>Transaksi</th>
-                                            <th>Event</th>
-                                            <th>Info Pembayaran</th>
-                                            <th>Status Transaksi</th>
+                                            <th>No</th>
+                                            <th>Kode Tujuan</th>
+                                            <th>Nama Pemilik</th>
+                                            <th>Nama Tujuan</th>
                                             <th>Action</th>
                                         </tr>
                                     </thead>
@@ -47,11 +46,10 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <th>NO</th>
-                                            <th>Transaksi</th>
-                                            <th>Event</th>
-                                            <th>Info Pembayaran</th>
-                                            <th>Status Transaksi</th>
+                                            <th>No</th>
+                                            <th>Kode Tujuan</th>
+                                            <th>Nama Pemilik</th>
+                                            <th>Nama Tujuan</th>
                                             <th>Action</th>
                                         </tr>
                                     </tfoot>
@@ -72,7 +70,7 @@
                 <form id="form-input" enctype="multipart/form-data">
                     {{ csrf_field() }}
                 <div class="modal-header">
-                    <h5 class="modal-title" id="staticBackdropLabel">Form Update</h5>
+                    <h5 class="modal-title" id="staticBackdropLabel">Form Update || Insert</h5>
                     <button type="button" onclick="clearForm()" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -80,18 +78,17 @@
                 <div class="modal-body">
                     <input type="hidden" name="id" id="id">
                     <div class="form-group">
-                        <label for="status_transaksi">Status Transaksi</label>
-                        <select class="form-control" id="status_transaksi" name="status_transaksi">
-                            <option value="1">Disetujui</option>
-                            <option value="2">Ditolak</option>
-                            <option value="3">Menunggu</option>
-                            <option value="4">Dibatalkan</option>
-                        </select>
-                    </div> 
+                        <label for="no_tujuan">No Tujuan Pembayaran</label>
+                        <input type="text" class="form-control" id="no_tujuan" name="no_tujuan" required>
+                    </div>
                     <div class="form-group">
-                        <label for="keterangan">Keterangan</label>
-                        <input type="text" class="form-control" id="keterangan" name="keterangan" required>
-                    </div>              
+                        <label for="atas_nama">Nama Pemilik</label>
+                        <input type="text" class="form-control" id="atas_nama" name="atas_nama" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tujuan">Nama Tujuan Pembayaran</label>
+                        <input type="text" class="form-control" id="tujuan" name="tujuan" required>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="clearForm()" data-dismiss="modal">Close</button>
@@ -132,7 +129,7 @@
                 "serverSide": true,
                 "searching": true,
                 "ajax": {
-                    "url" : "/transaksi/get_datatables",
+                    "url" : "/alamat-pembayaran/get_datatables",
                     "dataType": "json",
                     "type": "POST",
                     "data": {
@@ -140,20 +137,20 @@
                     }
                 },
                 "columns" : [
-                    {"data": "no"},
-                    {"data": "keterangan"},
-                    {"data": "event"},
-                    {"data": "pembayaran"},
-                    {"data": "transaksi"},
-                    {"data": "action"},
+                    {"data": "id"},
+                    {"data": "no_tujuan"},
+                    {"data": "atas_nama"},
+                    {"data": "tujuan"},
+                    {"data": "action"}
                 ]
             });
         }
 
-        function setDataUpdate(id,status_transaksi,keterangan){
+        function setDataUpdate(id,no_tujuan,atas_nama,tujuan){
             $('#id').val(id);
-            $('#status_transaksi').val(status_transaksi);
-            $('#keterangan').val(keterangan);
+            $('#no_tujuan').val(no_tujuan);
+            $('#atas_nama').val(atas_nama);
+            $('#tujuan').val(tujuan);
         }
 
         $('#form-input').on('submit', function(e){
@@ -162,9 +159,9 @@
             var url = "";
             var id = $('#id').val();  
             if(id === ""){
-                url = "/transaksi/insert";
+                url = "/alamat-pembayaran/insert";
             }else{
-                url = "/transaksi/update";
+                url = "/alamat-pembayaran/update";
             }
 
             $.ajax({
@@ -205,6 +202,44 @@
                 }
             })
         })
+
+        function hapus(id){
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: "Apakah anda yakin mau menghapus data ini ?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor:'#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Hapus',
+                cancelButtonText: 'Tidak'
+            }).then((result) => {
+                if (result.value) {
+                    $.get(`/alamat-pembayaran/delete/${id}`, function(data){
+                        if(data.status){
+                            Swal.fire({
+                                title: 'Sukses',
+                                text: data.message,
+                                icon: 'success',
+                                showCancelButton: false,
+                                confirmButtonColor: '#3085d6',
+                                allowOutsideClick :false,
+                            }).then((result) => {
+                                if (result.value) {
+                                    $('#example1').DataTable().ajax.reload();
+                                }
+                            })
+                        }else{
+                            Swal.fire(
+                                'Gagal',
+                                data.message,
+                                'error'
+                            )
+                        }
+                    });
+                }
+        })
+        }
 
         function clearForm(){
             $('#id').val('');

@@ -92,7 +92,7 @@ class EventController extends Controller{
         $request->validate([
             'judul' => 'required',
             'biaya' => 'required',
-            'kuota' => 'required',
+            'kuota' => 'required|numeric',
             'transportasi' => 'required',
             'kategori' => 'required'
         ]);

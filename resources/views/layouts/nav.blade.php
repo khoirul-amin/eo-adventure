@@ -82,6 +82,12 @@
                     <p>Event</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="/galery" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Galery</p>
+                    </a>
+                </li>
               </ul>
             </li>
             <li class="nav-item">
@@ -94,6 +100,26 @@
                     <a href="/transaksi" class="nav-link">
                     <i class="far fa-circle nav-icon"></i>
                     <p>Transaksi</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/alamat-pembayaran" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Alamat Pembayaran</p>
+                    </a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <a href="#" class="nav-link">
+                  <i class="nav-icon fas fa-tags"></i>
+                  <p>Ulasan <i class="right fas fa-angle-left"></i> </p>
+              </a>
+              <ul class="nav nav-treeview">
+                <li class="nav-item">
+                    <a href="/ulasan" class="nav-link">
+                    <i class="far fa-circle nav-icon"></i>
+                    <p>Ulasan</p>
                     </a>
                 </li>
               </ul>

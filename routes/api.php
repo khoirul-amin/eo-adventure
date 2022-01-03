@@ -39,5 +39,6 @@ Route::middleware('apiCek')->group(function () {
     Route::get('/history/{id}', 'Api\TransaksiController@get_history_by_id');
     
     Route::post('/history/search', 'Api\TransaksiController@search_history');
+    Route::get('/alamat-pembayaran', 'Api\EventController@get_alamat');
 });
 
