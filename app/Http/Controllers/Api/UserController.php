@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Library\ResponseLibrary;
 use App\Http\Library\ValidasiLibrary;
 use App\Http\Models\user_m;
+use App\Mail\MailSend;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class UserController{
     public function register(Request $request){
@@ -35,6 +37,7 @@ class UserController{
 
                 if($res){
                     $cek_email = user_m::where('email', $request->email)->first();
+                    Mail::to($request->email)->send(new MailSend($request->name));
                     if($cek_email){
                         
                         // Cek password
@@ -176,5 +179,9 @@ class UserController{
         }
 
         return response()->json((new ResponseLibrary())->res(200, $data, 'Data Profil'));
+    }
+
+    public function test_mail(){
+        Mail::to("anisatulmahzumah123@gmail.com")->send(new MailSend("Anisatul"));
     }
 }

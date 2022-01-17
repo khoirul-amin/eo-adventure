@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Library\ResponseLibrary;
 use App\Http\Library\ValidasiLibrary;
+use App\Http\Models\event_m;
 use App\Http\Models\images_m;
+use App\Http\Models\paket_m;
 use App\Http\Models\transaksi_m;
+use App\Http\Models\user_m;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 
 class TransaksiController{
     function all_history(Request $request){
@@ -34,7 +38,7 @@ class TransaksiController{
         ->join('paket', 'transaksi.paket_id', '=', 'paket.id')
         ->join('pembayaran', 'transaksi.pembayaran_id','=','pembayaran.id')
         ->where('transaksi.id', $id)
-        ->get(['transaksi.*', 'pembayaran.*','transaksi.id as id_transaksi','event.*','users.name','paket.paket','paket.harga','kategori_event.kategori','transportasi.transportasi'])->first();
+        ->get(['transaksi.*', 'pembayaran.*','transaksi.id as id_transaksi','event.*','users.telpon','users.name','paket.paket','paket.harga','kategori_event.kategori','transportasi.transportasi'])->first();
 
         
 
@@ -73,7 +77,7 @@ class TransaksiController{
             $res['transportasi'] = $history->transportasi;
             $res['kategori'] = $history->paket;
             $res['gambar'] = $gambar->images;
-            $res['kode_pembayaran'] = $history->no_tujuan;
+            $res['kode_pembayaran'] = "1161900000001902";
             $res['nama_pemilik'] = $history->atas_nama;
             $res['nama_tujuan_pembayaran'] = $history->tujuan;
             
@@ -94,34 +98,82 @@ class TransaksiController{
         $validate = (new ValidasiLibrary())->cek($validasi);
 
 
+
         if($validate != null){
             return response()->json($validate);
         }else{
-            $posts = array();
+            $user = user_m::where('id',$request->header('userId'))->first();
+            if(!empty($user->telpon)){
+                $paket = paket_m::where('id', $request->paket_id)->first();
+                $event = event_m::where('id', $request->event_id)->first();
+                $posts = array();
 
-            $date = date_create($request->tanggal_pemberangkatan);
-            $dateformat = date_format($date,"Y-m-d H:i:s");
-            $pembayaran = date('Y-m-d H:i:s',strtotime($dateformat . "-1 days"));
+                $date = date_create($request->tanggal_pemberangkatan);
+                $dateformat = date_format($date,"Y-m-d H:i:s");
+                $pembayaran = date('Y-m-d H:i:s',strtotime($dateformat . "-1 days"));
 
-            $posts['pemberangkatan'] = $dateformat;
-            $posts['pembayaran_id'] = $request->pembayaran_id;
-            $posts['user_id'] = $request->header('userId');
-            $posts['event_id'] = $request->event_id;
-            $posts['paket_id'] = $request->paket_id;
-            $posts['tanggal'] = date('Y-m-d H:i:s');
-            $posts['invoice'] = 'TRX'.$request->header('userId').date('Ymd').(transaksi_m::max('id')+1);
-            $posts['status_transaksi'] = 3;
-            $posts['dadeline_pembayaran'] = $pembayaran;
+                $posts['pemberangkatan'] = $dateformat;
+                $posts['pembayaran_id'] = $request->pembayaran_id;
+                $posts['user_id'] = $request->header('userId');
+                $posts['event_id'] = $request->event_id;
+                $posts['paket_id'] = $request->paket_id;
+                $posts['tanggal'] = date('Y-m-d H:i:s');
+                $posts['invoice'] = 'TRX'.$request->header('userId').date('Ymd').(transaksi_m::max('id')+1);
+                $posts['status_transaksi'] = 3;
+                $posts['dadeline_pembayaran'] = $pembayaran;
 
-            $id = transaksi_m::insertGetId($posts);
 
-            if(!empty($id)){
-                return response()->json((new ResponseLibrary())->res(200, $id, "Request order berhasil silahkan lakukan pembayaran terahir tanggal $pembayaran"));
+                $test_data = array(
+                    "amount" => $paket->harga,
+                    "cust_email" => $user->email,
+                    "cust_id" => $user->id,
+                    "cust_msisdn" => $user->id.$user->telpon,
+                    "cust_name" => $user->name,
+                    "invoice" => 'TRX'.$request->header('userId').date('Ymd').(transaksi_m::max('id')+1),  
+                    "merchant_id" => "J777IYQZGM58I",
+                    "items" => "TEST 123",
+                    "sof_type" => "pay",
+                    "sof_id" => "vabni",
+                    "return_url" => "https://enjocyjoky2hc.x.pipedream.net",
+                    "success_url" => "https://enprkoj2cr34s.x.pipedream.net",
+                    "failed_url" => "https://enbgemck5o0z.x.pipedream.net",
+                    "back_url" => "https://en83plhn4lo0g.x.pipedream.net",
+                    "timeout" => "300",  
+                    "trans_date" => date('YmdHis'),
+                    "add_info1" => $user->name."-".$event->judul,
+                    "add_info2" => "JM-Adventure",
+                    "add_info3" => "tiga",
+                    "add_info4" => "empat",
+                    "add_info5" => "jt5m7523vspqntsmqd8yd634"	
+                );
+
+
+
+                $tes = $this->createSignature($test_data,"cWITayeA");
+                $test_data["mer_signature"] = $tes["result"];
+
+                // $response_api = Http::post('https://sandbox.finpay.co.id/servicescode/api/pageFinpay.php', $test_data);
+                $response_api = Http::post('https://sandbox.finpay.co.id/servicescode/api/apiFinpay.php', $test_data);
+                $response_code =  $response_api->json()["status_code"];
+                if($response_code != "00"){
+                    return response()->json((new ResponseLibrary())->res(302, null, $response_api->json()["status_desc"]));
+                }else{
+                    $posts['keterangan'] = $response_api->json()["redirect_url"];
+                    $id = transaksi_m::insertGetId($posts);
+
+                    if(!empty($id)){
+                        return response()->json((new ResponseLibrary())->res(200, $id, "Request order berhasil silahkan lakukan pembayaran terahir tanggal $pembayaran"));
+                    }else{
+                        return response()->json((new ResponseLibrary())->res(302, null, 'Terjadi kesalahan pada aplikasi'));
+                    }
+                }
             }else{
-                return response()->json((new ResponseLibrary())->res(302, null, 'Terjadi kesalahan pada aplikasi'));
+                return response()->json((new ResponseLibrary())->res(302, null, 'Lengkapi nomor telpon anda sebelum mulai transaksi'));
             }
-
         }
+            
+
+
     }
 
     function upload_bukti(Request $request){
@@ -166,5 +218,33 @@ class TransaksiController{
         }
 
 
+    }
+
+
+    function createSignature($data,$pass){
+        $sign_component = $this->mer_signature($data,$sortir='Y').$pass;
+        $sign_result = strtoupper(hash("sha256",$sign_component));
+        $sign_response['component'] = $sign_component;
+        $sign_response['result'] = $sign_result;
+        return($sign_response);
+    }
+    
+    function mer_signature($dataArray,$sortir=''){
+        $output = "";
+        unset($dataArray['mer_signature']);
+        $result = array_filter($dataArray);
+        if($sortir=='Y'){
+            ksort ($result);
+        }
+        foreach($result as $key=>$val){
+            if(!empty($val)){
+                if(is_array($val)){
+                    $output .= json_encode($val).'%';
+                }else{
+                    $output .= $val.'%';
+                }
+            }
+        }
+        return strtoupper($output);
     }
 }

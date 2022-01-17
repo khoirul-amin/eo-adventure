@@ -25,6 +25,7 @@ Route::middleware('apiCek')->group(function () {
 
     Route::post('/update-profile', 'Api\UserController@update_profile');
     Route::get('/profil/{id}', 'Api\UserController@get_profil');
+    Route::get('/mailtest', 'Api\UserController@test_mail');
 
     Route::get('/events', 'Api\EventController@get_all');
     Route::get('/event/kategoris', 'Api\EventController@get_all_kategori');
