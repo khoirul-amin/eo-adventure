@@ -7,6 +7,7 @@ use App\Http\Library\ValidasiLibrary;
 use App\Http\Models\event_m;
 use App\Http\Models\images_m;
 use App\Http\Models\paket_m;
+use App\Http\Models\pembayaran_m;
 use App\Http\Models\transaksi_m;
 use App\Http\Models\user_m;
 use Illuminate\Http\Request;
@@ -117,6 +118,7 @@ class TransaksiController{
             if(!empty($user->telpon)){
                 $paket = paket_m::where('id', $request->paket_id)->first();
                 $event = event_m::where('id', $request->event_id)->first();
+                $pembayaranD = pembayaran_m::where('id', $request->pembayaran)->first();
                 $posts = array();
 
                 $date = date_create($request->tanggal_pemberangkatan);
@@ -144,7 +146,7 @@ class TransaksiController{
                     "merchant_id" => "J777IYQZGM58I",
                     "items" => "TEST 123",
                     "sof_type" => "pay",
-                    "sof_id" => "vabni",
+                    "sof_id" => $pembayaranD->tujuan,
                     "return_url" => "https://enjocyjoky2hc.x.pipedream.net",
                     "success_url" => "http://b0c7-125-164-4-172.ngrok.io/travel/api_resp/success.php",
                     "failed_url" => "https://enbgemck5o0z.x.pipedream.net",
