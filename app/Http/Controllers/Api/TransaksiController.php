@@ -45,6 +45,16 @@ class TransaksiController{
         if($history->first()){
             $gambar = images_m::where('type', $history->kode_event)->first();
             $res = array();
+            $paymentC = "kosong";
+
+            try {
+                $str = $history->keterangan;
+                $payment_code = explode("&",$str)[3];
+                $paymentC = explode("=",$payment_code)[1];
+            } catch (\Throwable $th) {
+                $paymentC = "kosong";
+            }
+
 
             $res['id'] = $history->id_transaksi;
             $res['id_event'] = $history->event_id;
@@ -77,7 +87,7 @@ class TransaksiController{
             $res['transportasi'] = $history->transportasi;
             $res['kategori'] = $history->paket;
             $res['gambar'] = $gambar->images;
-            $res['kode_pembayaran'] = "1161900000001902";
+            $res['kode_pembayaran'] = $paymentC;
             $res['nama_pemilik'] = $history->atas_nama;
             $res['nama_tujuan_pembayaran'] = $history->tujuan;
             
@@ -97,6 +107,7 @@ class TransaksiController{
         
         $validate = (new ValidasiLibrary())->cek($validasi);
 
+        
 
 
         if($validate != null){
@@ -135,7 +146,7 @@ class TransaksiController{
                     "sof_type" => "pay",
                     "sof_id" => "vabni",
                     "return_url" => "https://enjocyjoky2hc.x.pipedream.net",
-                    "success_url" => "https://enprkoj2cr34s.x.pipedream.net",
+                    "success_url" => "http://b0c7-125-164-4-172.ngrok.io/travel/api_resp/success.php",
                     "failed_url" => "https://enbgemck5o0z.x.pipedream.net",
                     "back_url" => "https://en83plhn4lo0g.x.pipedream.net",
                     "timeout" => "300",  
