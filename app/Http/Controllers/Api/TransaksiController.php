@@ -118,7 +118,7 @@ class TransaksiController{
             if(!empty($user->telpon)){
                 $paket = paket_m::where('id', $request->paket_id)->first();
                 $event = event_m::where('id', $request->event_id)->first();
-                $pembayaranD = pembayaran_m::where('id', $request->pembayaran)->first();
+                $pembayaranD = pembayaran_m::where('id', $request->pembayaran_id)->first();
                 $posts = array();
 
                 $date = date_create($request->tanggal_pemberangkatan);
@@ -147,10 +147,10 @@ class TransaksiController{
                     "items" => "TEST 123",
                     "sof_type" => "pay",
                     "sof_id" => $pembayaranD->tujuan,
-                    "return_url" => "https://enjocyjoky2hc.x.pipedream.net",
+                    "return_url" => "http://b0c7-125-164-4-172.ngrok.io/travel/api_resp/success.php",
                     "success_url" => "http://b0c7-125-164-4-172.ngrok.io/travel/api_resp/success.php",
-                    "failed_url" => "https://enbgemck5o0z.x.pipedream.net",
-                    "back_url" => "https://en83plhn4lo0g.x.pipedream.net",
+                    "failed_url" => "http://b0c7-125-164-4-172.ngrok.io/travel/api_resp/success.php",
+                    "back_url" => "http://b0c7-125-164-4-172.ngrok.io/travel/api_resp/success.php",
                     "timeout" => "300",  
                     "trans_date" => date('YmdHis'),
                     "add_info1" => $user->name."-".$event->judul,

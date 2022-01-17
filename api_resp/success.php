@@ -1,23 +1,22 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "12345678";
-$dbname = "travel";
+    $servername = "localhost";
+    $username = "root";
+    $password = "12345678";
+    $dbname = "travel";
 
-// Create connection
-$conn = mysqli_connect($servername, $username, $password, $dbname);
-// Check connection
-if (!$conn) {
-  die("Connection failed: " . mysqli_connect_error());
-}
+    // Create connection
+    $conn = mysqli_connect($servername, $username, $password, $dbname);
+    // Check connection
+    if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+    }
 
-$sql = "UPDATE transaksi SET status_transaksi=1 WHERE id=15";
+    $sql = "UPDATE transaksi SET status_transaksi=1 WHERE status_transaksi=3";
 
-if (mysqli_query($conn, $sql)) {
-  echo "Record updated successfully";
-} else {
-  echo "Error updating record: " . mysqli_error($conn);
-}
+    if (mysqli_query($conn, $sql)) {
+    echo "Record updated successfully";
+    } else {
+    echo "Error updating record: " . mysqli_error($conn);
+    }
 
-mysqli_close($conn);
-?>
+    mysqli_close($conn);
